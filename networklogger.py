@@ -3,6 +3,8 @@ import select
 import socket
 import sys
 import exceptions
+import Queue
+import packagehandler
 
 
 def write_report(contents):
@@ -38,20 +40,22 @@ def main():
 	print 'Starting network logger...'
 
 	bufferSize = 95
-
 	numOfExceptions = 0
+	messageQueue = Queue.Queue()
+	packageHandlerThread = packagehandler.PackageHandlerThread(messageQueue)
+	packageHandlerThread.start()
 
 	while numOfExceptions < 3:
 		print numOfExceptions
 		try:
 			s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-			s.bind(('', 6000))
+			s.bind(('', cfg.HDL_PORT))
 			#s.setblocking(0)
 			print('Listening on port [%s]...' % (cfg.HDL_PORT))
 			#numOfExceptions = 0
 			while True:
 				data, addr = s.recvfrom(bufferSize)
-				print "received message:", data
+				messageQueue.put(data)
 				#result = select.select([s],[],[])
 				#msg = result[0][0].recv(bufferSize)
 		except exceptions.KeyboardInterrupt:
@@ -60,6 +64,7 @@ def main():
 			numOfExceptions += 1
 			print "Got unexpected error while logging network traffic.", sys.exc_info()[0]
 			raise
+	packageHandlerThread.stop()
 	print 'Exiting application.'
 
 

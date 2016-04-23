@@ -44,11 +44,12 @@ To kill/stop the script just enter the following command:
 #### 2b. Running the script on startup
 The script can be run as a cron job that starts on reboot of the Raspberry PI.
 
+** Don't do this part yet, it doesn't work as-is. I'll check it out and update it.**
 To edit the cronjob:  
 `crontab - e`
 
 Add the following line at the end (note that we assume the user you are logged in as have the username/home directory _pi_):  
-@reboot python /home/pi/python-hdl-networklogger/networklogger.py >/home/pi/python-hdl-networklogger/cronlog 2>&1
+`@reboot python /home/pi/python-hdl-networklogger/networklogger.py >/home/pi/python-hdl-networklogger/cronlog 2>&1
 
 Use `ctrl + x` to exit, press `Y` to save the cron setup and `enter` to confirm the filename.
 

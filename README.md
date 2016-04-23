@@ -52,12 +52,12 @@ Add the following line at the end:
 
 Use `ctrl + x` to exit, press `Y` to save the cron setup and `enter` to confirm the filename.
 
-Restart the device using `sudo shutdown -r now` and check out if there's stuff going on in `network.log`. `cronlog` will also contain output and any error messages running
+Restart the device using `sudo shutdown -r now` and check out if there's stuff going on in `network.log`. `launcher.log` will also contain output and any error messages running
 the script.
 
 #### 3. Reading the logs
 
-You can easily tap in to what's going by running `tail`:
+You can easily tap in to what's going by running `tail`:  
 `tail -f network.log`
 
 This will let you follow the file and the contents that's written to it. To end the session just press `ctrl + c`.
@@ -65,4 +65,4 @@ This will let you follow the file and the contents that's written to it. To end 
 #### Updating the script
 
 If you chose to do a `git clone` in the first step you can just run `git pull` inside the directory at `~/python-hdl-networklogger`. If you run the script at boot
-time it is easiest to just reboot your Raspberry PI using `sudo shutdown -r now`.
+time it is easiest to just reboot your Raspberry PI using `sudo shutdown -r now` to ensure the latest version of the script is running.

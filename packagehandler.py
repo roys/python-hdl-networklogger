@@ -11,12 +11,24 @@ class PackageHandlerThread (threading.Thread):
 	BYTE_POSITION_OPERATION_CODE_BYTE_1 = 21
 	BYTE_POSITION_OPERATION_CODE_BYTE_2 = 22
 	LOG_TYPE_FILE_HUMAN_READABLE = 1
+	OPERATION_CODES = {
+		0x0031: "Single channel control",
+		0x0032: "Response single channel control",
+		0x1647: "Broadcast sensors status",
+		0x1948: "Read temperature",
+		0x1949: "Response read temperature",
+		0x1C5C: "Control floor heating status",
+		0x1C5D: "Response control floor heating status",
+		0xE3E5: "Broadcast temperature",
+		0xDA44: "Broadcast date and time (every minute)"
+	}
 
 	def __init__(self, messageQueue):
 		threading.Thread.__init__(self)
 		self.messageQueue = messageQueue
 		logHandler = TimedRotatingFileHandler("network.log", when="midnight", backupCount=7)
 		#logHandler.suffix = '%Y-%m-%d.log'
+		logging.basicConfig(format='%(asctime)s %(message)s')
 		self.log = logging.getLogger()
 		self.log.setLevel(logging.DEBUG)
 		self.log.addHandler(logHandler)
@@ -45,9 +57,10 @@ class PackageHandlerThread (threading.Thread):
 			#print rawBytes
 			#print map(hex, rawBytes)
 			#print rawBytes[self.BYTE_POSITION_OPERATION_CODE_BYTE_1].__class__.__name__
-			operationCode =  "0x" + ("%X" % (((rawBytes[self.BYTE_POSITION_OPERATION_CODE_BYTE_1] & 0xFF) << 8) + (rawBytes[self.BYTE_POSITION_OPERATION_CODE_BYTE_2] & 0xFF))).zfill(4)
+			operationCodeInt = (((rawBytes[self.BYTE_POSITION_OPERATION_CODE_BYTE_1] & 0xFF) << 8) + (rawBytes[self.BYTE_POSITION_OPERATION_CODE_BYTE_2] & 0xFF))
+			operationCode =  "0x" + ("%X" % operationCodeInt).zfill(4)
 			#print "Operation code: ", map(hex, operationCode)
-			self.log.info("Operation code: %s" % operationCode)
+			self.log.info("Op: %s" % operationCode + " (" + self.getOperationName(operationCodeInt) + ")")
 			#print "Operation code: ", operationCode
 
 
@@ -62,3 +75,12 @@ class PackageHandlerThread (threading.Thread):
 			# TODO: Verify CRC
 			return True
 		return False
+
+
+	def getOperationName(self, operationCodeInt):
+		if(operationCodeInt in self.OPERATION_CODES):
+			name = self.OPERATION_CODES[operationCodeInt]
+		else:
+			name = "Unknown operation"
+		return '{0:<30.30}'.format(name)
+

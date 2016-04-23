@@ -24,7 +24,20 @@ It can be smart to check that the script is working and getting data:
 `python networklogger.py`  
 Use ctrl + c to exit the script.
 
-#### 2. ...TBC
+#### 2a. Running the script in the background
+
+If you want to make the script run on startup then skip to **2b**. If you want to just run the script in the background you can enter the following command:  
+`nohup python networklogger.py &`
+
+The number that is printed out is the process number. You can use this number to stop the script.
+
+If you don't have the process number you can find it using `ps aux | grep networklogger`.
+
+To kill/stop the script just enter the following command:
+`kill [process number]`
+
+#### 2b. Running the script on startup
+TBC...
 
 #### Updating the script
 

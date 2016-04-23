@@ -8,8 +8,12 @@ class PackageHandlerThread (threading.Thread):
 
 	FIXED_BYTES_PART_1 = ['H', 'D', 'L', 'M', 'I', 'R', 'A', 'C', 'L', 'E']
 	FIXED_BYTES_PART_2 = [-86, -86] # = 0xAA
+	BYTE_POSITION_SOURCE_SUBNET_ID = 17
+	BYTE_POSITION_SOURCE_DEVICE_ID = 18
 	BYTE_POSITION_OPERATION_CODE_BYTE_1 = 21
 	BYTE_POSITION_OPERATION_CODE_BYTE_2 = 22
+	BYTE_POSITION_TARGET_SUBNET_ID = 23
+	BYTE_POSITION_TARGET_DEVICE_ID = 24
 	LOG_TYPE_FILE_HUMAN_READABLE = 1
 	OPERATION_CODES = {
 		0x0031: "Single channel control",
@@ -53,15 +57,11 @@ class PackageHandlerThread (threading.Thread):
 	def processMessage(self, rawMessageStr):
 		rawBytes = array.array("b", rawMessageStr)
 		if(self.isMessageValid(rawBytes)):
-			#print "rawMessageStr: ", rawMessageStr
-			#print rawBytes
-			#print map(hex, rawBytes)
-			#print rawBytes[self.BYTE_POSITION_OPERATION_CODE_BYTE_1].__class__.__name__
 			operationCodeInt = (((rawBytes[self.BYTE_POSITION_OPERATION_CODE_BYTE_1] & 0xFF) << 8) + (rawBytes[self.BYTE_POSITION_OPERATION_CODE_BYTE_2] & 0xFF))
 			operationCode =  "0x" + ("%X" % operationCodeInt).zfill(4)
-			#print "Operation code: ", map(hex, operationCode)
-			self.log.info("Op: %s" % operationCode + " (" + self.getOperationName(operationCodeInt) + ")")
-			#print "Operation code: ", operationCode
+			sourceSubnetAndDeviceId = '{0:<5}'.format(str(rawBytes[self.BYTE_POSITION_SOURCE_SUBNET_ID] & 0xFF) + "/" + str(rawBytes[self.BYTE_POSITION_SOURCE_DEVICE_ID] & 0xFF))
+			destinationSubnetAndDeviceId = '{0:<7}'.format(str(rawBytes[self.BYTE_POSITION_TARGET_SUBNET_ID] & 0xFF) + "/" + str(rawBytes[self.BYTE_POSITION_TARGET_DEVICE_ID] & 0xFF))
+			self.log.info("Op: %s" % operationCode + " (" + self.getOperationName(operationCodeInt) + "), src: (" + sourceSubnetAndDeviceId + "), dst: (" + destinationSubnetAndDeviceId + ")")
 
 
 	def isMessageValid(self, bytes):
@@ -83,4 +83,3 @@ class PackageHandlerThread (threading.Thread):
 		else:
 			name = "Unknown operation"
 		return '{0:<30.30}'.format(name)
-

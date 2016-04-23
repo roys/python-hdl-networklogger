@@ -41,14 +41,14 @@ class PackageHandlerThread (threading.Thread):
 	def processMessage(self, rawMessageStr):
 		rawBytes = array.array("b", rawMessageStr)
 		if(self.isMessageValid(rawBytes)):
-			print "rawMessageStr: ", rawMessageStr
+			#print "rawMessageStr: ", rawMessageStr
 			#print rawBytes
 			#print map(hex, rawBytes)
-			print rawBytes[self.BYTE_POSITION_OPERATION_CODE_BYTE_1].__class__.__name__
+			#print rawBytes[self.BYTE_POSITION_OPERATION_CODE_BYTE_1].__class__.__name__
 			operationCode =  "0x" + ("%X" % (((rawBytes[self.BYTE_POSITION_OPERATION_CODE_BYTE_1] & 0xFF) << 8) + (rawBytes[self.BYTE_POSITION_OPERATION_CODE_BYTE_2] & 0xFF))).zfill(4)
 			#print "Operation code: ", map(hex, operationCode)
 			self.log.info("Operation code: %s" % operationCode)
-			print "Operation code: ", operationCode
+			#print "Operation code: ", operationCode
 
 
 	def isMessageValid(self, bytes):

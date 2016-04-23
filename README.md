@@ -7,7 +7,7 @@ To run the script just type `python networklogger.py`.
 By default it will listen for UDP packages on *all available network interfaces on port 6000* and log the traffic to disk.
 
 ### Configuring the script
-To configure the script you create a new file called `hdlconfig.py`. There's an example config file called `hdlconfig-example.py` you should use as basis for your config.
+If you want to or need to configure the script you just create a new file called `hdlconfig.py`. There's an example config file called `hdlconfig-example.py` you should use as basis for your config. **Please note that at this point the e-mail stuff is not in use.**
 
 ### Logging
 The data from the HDL system is logged into a file (that will be created) called `network.log`. If the script is running continuously the files will be *rotated* at midnight. By default files will be kept for a week. Make sure you have enough disk space for this.
@@ -42,7 +42,18 @@ To kill/stop the script just enter the following command:
 `kill [process number]`
 
 #### 2b. Running the script on startup
-TBC...
+The script can be run as a cron job that starts on reboot of the Raspberry PI.
+
+To edit the cronjob:  
+`crontab - e`
+
+Add the following line at the end (note that we assume the user you are logged in as have the username/home directory _pi_):  
+@reboot python /home/pi/python-hdl-networklogger/networklogger.py >/home/pi/python-hdl-networklogger/cronlog 2>&1
+
+Use `ctrl + x` to exit, press `Y` to save the cron setup and `enter` to confirm the filename.
+
+Restart the device using `sudo shutdown -r now` and check out if there's stuff going on in `network.log`. `cronlog` will also contain output and any error messages running
+the script.
 
 #### 3. Reading the logs
 

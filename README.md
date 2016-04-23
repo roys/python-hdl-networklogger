@@ -11,22 +11,22 @@ To configure the script you create a new file called `hdlconfig.py`. There's an 
 
 ### Complete setup on a Raspberry PI running Raspbian GNU/Linux
 
-## 1. Directory setup and getting the script
+#### 1. Directory setup and getting the script
 
 First SSH into your Raspberry PI.
 
-Then download the code:
-`cd ~`
-`git clone https://github.com/roys/python-hdl-networklogger.git`
+Then download the code:  
+`cd ~`  
+`git clone https://github.com/roys/python-hdl-networklogger.git`  
 
-It can be smart to check that the script is working and getting data:
-`cd python-hdl-networklogger`
-`python networklogger.py`
+It can be smart to check that the script is working and getting data:  
+`cd python-hdl-networklogger`  
+`python networklogger.py`  
 Use ctrl + c to exit the script.
 
-## 2. ...TBC
+#### 2. ...TBC
 
-## Updating the script
+#### Updating the script
 
 If you chose to do a `git clone` in the first step you can just run `git pull` inside the directory at `~/python-hdl-networklogger`. If you run the script at boot
 time it is easiest to just reboot your Raspberry PI using `sudo shutdown -r now`.

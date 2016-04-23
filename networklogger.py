@@ -1,4 +1,3 @@
-import hdlconfig as cfg
 import select
 import socket
 import sys
@@ -35,10 +34,21 @@ def send_report(contents):
 		print "Got unexpected error while trying to send mail. Will write report to file.", sys.exc_info()[0]
 		write_report(contents)
 
+def getConfig():
+	try:
+		cfg = __import__("hdlconfig")
+	except ImportError:
+		print '\033[93m' + "\nWARNING: Did not find a configuration file called hdlconfig.py. Will use default config. You can use the file hdlconfig-example.py as inspiration.\n" + '\033[0m'
+		class Config(object):
+			pass
+		cfg = Config()
+		cfg.HDL_PORT = 6000
+	return cfg
 
 def main():
 	print 'Starting network logger...'
 
+	cfg = getConfig()
 	bufferSize = 95
 	numOfExceptions = 0
 	messageQueue = Queue.Queue()
@@ -46,7 +56,6 @@ def main():
 	packageHandlerThread.start()
 
 	while numOfExceptions < 3:
-		print numOfExceptions
 		try:
 			s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 			s.bind(('', cfg.HDL_PORT))

@@ -44,7 +44,8 @@ To kill/stop the script just enter the following command:
 #### 2b. Running the script on startup
 The script can be run as a cron job that starts on reboot of the Raspberry PI.
 
-** Don't do this part yet, it doesn't work as-is. I'll check it out and update it.**
+**Don't do this part yet, it doesn't work as-is. I'll check it out and update it.**
+
 To edit the cronjob:  
 `crontab - e`
 

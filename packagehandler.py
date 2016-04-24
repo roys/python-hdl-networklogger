@@ -7,6 +7,8 @@ from logging.handlers import TimedRotatingFileHandler
 class PackageHandlerThread (threading.Thread):
 
 	OPERATION_CODES = {
+		0x000E: "Search",
+		0x000F: "Response search",
 		0x0031: "Single channel control",
 		0x0032: "Response single channel control",
 		0x15D0: "Read dry contact status",
@@ -24,7 +26,11 @@ class PackageHandlerThread (threading.Thread):
 	COMPONENT_TYPES = {
 		0x00D3: "6 Channels Floor Heating Module",
 		0x0138: "Ceiling Mount PIR Sensor",
-		0x01C0: "8 Channels 10A Relay"
+		0x01C0: "8 Channels 10A Relay",
+		0x0455: "Logic module",
+		0x0FA0: "SMS module",
+		0xFFFD: "Android app by Roy Solberg",
+		0xFFFE: "HDL-BUS Pro Setup Tool"
 	}
 	FIXED_BYTES_PART_1 = ['H', 'D', 'L', 'M', 'I', 'R', 'A', 'C', 'L', 'E']
 	FIXED_BYTES_PART_2 = [0xAA, 0xAA] # = 0xAA
@@ -77,7 +83,7 @@ class PackageHandlerThread (threading.Thread):
 			destinationSubnetAndDeviceId = '{0:<7}'.format(str(rawBytes[self.BYTE_POSITION_TARGET_SUBNET_ID] & 0xFF) + "/" + str(rawBytes[self.BYTE_POSITION_TARGET_DEVICE_ID] & 0xFF))
 			contentLength = rawBytes[self.BYTE_POSITION_LENGTH] & 0xFF
 			if(contentLength > 78 or contentLength < 11):
-				self.log.warn("WARNING: Unexpected contents length [" + contentLength + "] of package:")
+				self.log.warn("WARNING: Unexpected contents length [" + str(contentLength) + "] of package:")
 			contentLength = min(contentLength, 78)
 			if(contentLength > 11):
 				contentBytes = rawBytes[self.BYTE_POSITION_CONTENT:self.BYTE_POSITION_CONTENT + contentLength - 11]
@@ -112,7 +118,7 @@ class PackageHandlerThread (threading.Thread):
 		if(type in self.COMPONENT_TYPES):
 			name = self.COMPONENT_TYPES[type]
 		else:
-			name = "Unknown component"
+			name = "Unknown component (" + str(type) + ")"
 		return '{0:<30.30}'.format(name)
 
 

@@ -38,8 +38,7 @@ class PackageHandlerThread (threading.Thread):
 		threading.Thread.__init__(self)
 		self.messageQueue = messageQueue
 		logHandler = TimedRotatingFileHandler("network.log", when="midnight", backupCount=7)
-		#logHandler.suffix = '%Y-%m-%d.log'
-		logging.basicConfig(format='%(asctime)s %(message)s')
+		logHandler.setFormatter(logging.Formatter('%(asctime)s %(message)s'))
 		self.log = logging.getLogger()
 		self.log.setLevel(logging.DEBUG)
 		self.log.addHandler(logHandler)

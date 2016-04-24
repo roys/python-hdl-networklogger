@@ -6,17 +6,6 @@ from logging.handlers import TimedRotatingFileHandler
 
 class PackageHandlerThread (threading.Thread):
 
-	FIXED_BYTES_PART_1 = ['H', 'D', 'L', 'M', 'I', 'R', 'A', 'C', 'L', 'E']
-	FIXED_BYTES_PART_2 = [-86, -86] # = 0xAA
-	BYTE_POSITION_SOURCE_SUBNET_ID = 17
-	BYTE_POSITION_SOURCE_DEVICE_ID = 18
-	BYTE_POSITION_DEVICE_TYPE_BYTE_1 = 19
-	BYTE_POSITION_DEVICE_TYPE_BYTE_2 = 20
-	BYTE_POSITION_OPERATION_CODE_BYTE_1 = 21
-	BYTE_POSITION_OPERATION_CODE_BYTE_2 = 22
-	BYTE_POSITION_TARGET_SUBNET_ID = 23
-	BYTE_POSITION_TARGET_DEVICE_ID = 24
-	LOG_TYPE_FILE_HUMAN_READABLE = 1
 	OPERATION_CODES = {
 		0x0031: "Single channel control",
 		0x0032: "Response single channel control",
@@ -25,6 +14,8 @@ class PackageHandlerThread (threading.Thread):
 		0x1647: "Broadcast sensors status",
 		0x1948: "Read temperature",
 		0x1949: "Response read temperature",
+		0x1C00: "Read temperature",
+		0x1C01: "Response read temperature",
 		0x1C5C: "Control floor heating status",
 		0x1C5D: "Response control floor heating status",
 		0xE3E5: "Broadcast temperature",
@@ -33,6 +24,19 @@ class PackageHandlerThread (threading.Thread):
 	COMPONENT_TYPES = {
 		0x0138: "Ceiling Mount PIR Sensor"
 	}
+	FIXED_BYTES_PART_1 = ['H', 'D', 'L', 'M', 'I', 'R', 'A', 'C', 'L', 'E']
+	FIXED_BYTES_PART_2 = [0xAA, 0xAA] # = 0xAA
+	BYTE_POSITION_LENGTH = 16
+	BYTE_POSITION_SOURCE_SUBNET_ID = 17
+	BYTE_POSITION_SOURCE_DEVICE_ID = 18
+	BYTE_POSITION_DEVICE_TYPE_BYTE_1 = 19
+	BYTE_POSITION_DEVICE_TYPE_BYTE_2 = 20
+	BYTE_POSITION_OPERATION_CODE_BYTE_1 = 21
+	BYTE_POSITION_OPERATION_CODE_BYTE_2 = 22
+	BYTE_POSITION_TARGET_SUBNET_ID = 23
+	BYTE_POSITION_TARGET_DEVICE_ID = 24
+	BYTE_POSITION_CONTENT = 25
+	LOG_TYPE_FILE_HUMAN_READABLE = 1
 
 	def __init__(self, messageQueue):
 		threading.Thread.__init__(self)
@@ -61,7 +65,7 @@ class PackageHandlerThread (threading.Thread):
 
 
 	def processMessage(self, rawMessageStr):
-		rawBytes = array.array("b", rawMessageStr)
+		rawBytes = array.array("B", rawMessageStr)
 		if(self.isMessageValid(rawBytes)):
 			operationCodeInt = (((rawBytes[self.BYTE_POSITION_OPERATION_CODE_BYTE_1] & 0xFF) << 8) + (rawBytes[self.BYTE_POSITION_OPERATION_CODE_BYTE_2] & 0xFF))
 			operationCode =  "0x" + ("%X" % operationCodeInt).zfill(4)
@@ -69,7 +73,17 @@ class PackageHandlerThread (threading.Thread):
 			sourceType = "0x" + ("%X" % sourceTypeInt).zfill(4)
 			sourceSubnetAndDeviceId = '{0:<5}'.format(str(rawBytes[self.BYTE_POSITION_SOURCE_SUBNET_ID] & 0xFF) + "/" + str(rawBytes[self.BYTE_POSITION_SOURCE_DEVICE_ID] & 0xFF))
 			destinationSubnetAndDeviceId = '{0:<7}'.format(str(rawBytes[self.BYTE_POSITION_TARGET_SUBNET_ID] & 0xFF) + "/" + str(rawBytes[self.BYTE_POSITION_TARGET_DEVICE_ID] & 0xFF))
-			self.log.info("Op: %s" % operationCode + " (" + self.getOperationName(operationCodeInt) + "), src: " + sourceSubnetAndDeviceId + " (" + sourceType + "/" + self.getTypeName(sourceTypeInt) + "), dst: " + destinationSubnetAndDeviceId + "")
+			contentLength = rawBytes[self.BYTE_POSITION_LENGTH] & 0xFF
+			if(contentLength > 78 or contentLength < 11):
+				self.log.warn("WARNING: Unexpected contents length [" + contentLength + "] of package:")
+			contentLength = min(contentLength, 78)
+			if(contentLength > 11):
+				contentBytes = rawBytes[self.BYTE_POSITION_CONTENT:self.BYTE_POSITION_CONTENT + contentLength - 11]
+				contents = "contents: " + "[" + self.getContentsAsText(contentBytes) + "]/[" + self.getContentsAsInts(contentBytes) + "]"
+			else:
+				contents = "no contents"
+
+			self.log.info("Op: %s" % operationCode + " (" + self.getOperationName(operationCodeInt) + "), src: " + sourceSubnetAndDeviceId + " (" + sourceType + "/" + self.getTypeName(sourceTypeInt) + "), dst: " + destinationSubnetAndDeviceId + ", \n                        " + contents + "\n")
 
 
 	def isMessageValid(self, bytes):
@@ -99,3 +113,11 @@ class PackageHandlerThread (threading.Thread):
 			name = "Unknown component"
 		return '{0:<30.30}'.format(name)
 
+
+	def getContentsAsText(self, contentBytes):
+		# TODO: How can we convert this unsigned char array to ISO-8859-1?
+		return contentBytes.tostring().replace("\r\n", "").replace("\n", "").replace("\r", "")
+
+
+	def getContentsAsInts(self, contentBytes):
+		return ' '.join(str(c).rjust(3) for c in contentBytes)

@@ -11,8 +11,7 @@ class PackageHandlerThread (threading.Thread):
 		0x000F: "Response search",
 		0x0031: "Single channel control",
 		0x0032: "Response single channel control",
-		0x15D0: "Read dry contact status",
-		0x15D1: "Response read dry contact status",
+		0x15D0: "Dry contact",
 		0x1647: "Broadcast sensors status",
 		0x1948: "Read temperature",
 		0x1949: "Response read temperature",
@@ -20,8 +19,12 @@ class PackageHandlerThread (threading.Thread):
 		0x1C01: "Response read temperature",
 		0x1C5C: "Control floor heating status",
 		0x1C5D: "Response control floor heating status",
-		0xE3E5: "Broadcast temperature",
-		0xDA44: "Broadcast date and time (every minute)"
+		0xDA44: "Broadcast date and time (every minute)",
+		0xE01C: "UV switch control"
+		0xE01D: "Response UV switch control"
+		0xE3D4: "Send SMS",
+		0xE3D5: "Response send SMS",
+		0xE3E5: "Broadcast temperature"
 	}
 	COMPONENT_TYPES = {
 		0x00D3: "6 Channels Floor Heating Module",

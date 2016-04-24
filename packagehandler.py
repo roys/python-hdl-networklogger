@@ -22,7 +22,9 @@ class PackageHandlerThread (threading.Thread):
 		0xDA44: "Broadcast date and time (every minute)"
 	}
 	COMPONENT_TYPES = {
-		0x0138: "Ceiling Mount PIR Sensor"
+		0x00D3: "6 Channels Floor Heating Module",
+		0x0138: "Ceiling Mount PIR Sensor",
+		0x01C0: "8 Channels 10A Relay"
 	}
 	FIXED_BYTES_PART_1 = ['H', 'D', 'L', 'M', 'I', 'R', 'A', 'C', 'L', 'E']
 	FIXED_BYTES_PART_2 = [0xAA, 0xAA] # = 0xAA

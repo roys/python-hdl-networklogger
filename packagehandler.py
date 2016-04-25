@@ -20,8 +20,8 @@ class PackageHandlerThread (threading.Thread):
 		0x1C5C: "Control floor heating status",
 		0x1C5D: "Response control floor heating status",
 		0xDA44: "Broadcast date and time (every minute)",
-		0xE01C: "UV switch control"
-		0xE01D: "Response UV switch control"
+		0xE01C: "UV switch control",
+		0xE01D: "Response UV switch control",
 		0xE3D4: "Send SMS",
 		0xE3D5: "Response send SMS",
 		0xE3E5: "Broadcast temperature"

@@ -24,7 +24,9 @@ class PackageHandlerThread (threading.Thread):
 		0xE01D: "Response UV switch control",
 		0xE3D4: "Send SMS",
 		0xE3D5: "Response send SMS",
-		0xE3E5: "Broadcast temperature"
+		0xE3E5: "Broadcast temperature",
+		0xE3D8: "Panel control",
+		0xE3D9: "Response panel control"
 	}
 	COMPONENT_TYPES = {
 		0x00D3: "6 Channels Floor Heating Module",
